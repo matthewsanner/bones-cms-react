@@ -215,7 +215,10 @@ function App() {
             path="/posts/:postId/edit"
             element={<EditPostGuard element={<EditPost />} />}
           />
-          <Route path="/users/create-account" element={<CreateAccount />} />
+          <Route
+            path="/users/create-account"
+            element={<CreateAccount setAuthenticated={setAuthenticated} />}
+          />
           <Route
             path="/users/login"
             element={<Login setAuthenticated={setAuthenticated} />}

@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { Box, FormControl, TextField, Button } from "@mui/material";
 import useTheme from "@mui/material/styles/useTheme";
 
-const CreateAccount = () => {
+const CreateAccount = ({ setAuthenticated }) => {
   const theme = useTheme();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -34,6 +34,9 @@ const CreateAccount = () => {
 
       if (response.ok) {
         // Account creation successful, redirect to home page
+        if (response.status === 201) {
+          setAuthenticated(true);
+        }
         navigate("/");
         toast.success("Created account successfully!");
       } else {
