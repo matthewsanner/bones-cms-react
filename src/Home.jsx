@@ -2,12 +2,16 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import DOMPurify from "dompurify";
-import Typography from "@mui/material/Typography";
-import Pagination from "@mui/material/Pagination";
-import Card from "@mui/material/Card";
-import CardHeader from "@mui/material/CardHeader";
-import CardContent from "@mui/material/CardContent";
-import CardActions from "@mui/material/CardActions";
+import {
+  Pagination,
+  Box,
+  Card,
+  CardHeader,
+  CardContent,
+  CardActions,
+  Typography,
+} from "@mui/material";
+import useTheme from "@mui/material/styles/useTheme";
 
 const formatDateTime = (dateTimeString) => {
   const date = new Date(dateTimeString);
@@ -30,6 +34,7 @@ const formatDateTime = (dateTimeString) => {
 };
 
 export default function Home() {
+  const theme = useTheme();
   const [posts, setPosts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -73,10 +78,27 @@ export default function Home() {
   }, [currentPage]);
 
   return (
-    <div>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        margin: "20px 40px",
+      }}>
       {/* Display the list of blog posts */}
+
       {posts.map((post) => (
-        <Card key={post._id} variant="outlined" sx={{ margin: 3 }}>
+        <Card
+          key={post._id}
+          variant="outlined"
+          sx={{
+            margin: 3,
+            width: "100%", // Default width for screens smaller than large
+            [theme.breakpoints.up("lg")]: {
+              width: "80%", // 80% width for screens large and larger
+            },
+          }}>
           <CardHeader
             title={post.title}
             subheader={`Posted by ${post.username} on ${formatDateTime(
@@ -103,6 +125,6 @@ export default function Home() {
         onChange={handlePageChange}
         sx={{ margin: 3 }}
       />
-    </div>
+    </Box>
   );
 }

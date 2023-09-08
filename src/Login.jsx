@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { Box, TextField, Button } from "@mui/material";
+import { Box, FormControl, TextField, Button } from "@mui/material";
+import useTheme from "@mui/material/styles/useTheme";
 
-const Login = () => {
+const Login = ({ setAuthenticated }) => {
+  const theme = useTheme();
   const navigate = useNavigate(); // Hook to navigate to different routes
   const [formData, setFormData] = useState({
     username: "",
@@ -28,6 +30,7 @@ const Login = () => {
       });
 
       if (response.ok) {
+        setAuthenticated(true);
         navigate("/");
         toast.success("Signed in successfully!");
       } else {
@@ -44,32 +47,56 @@ const Login = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <Box sx={{ margin: 3 }}>
-        <TextField
-          label="Username"
-          variant="outlined"
-          value={formData.username}
-          fullWidth
-          onChange={(e) => handleChange("username", e.target.value)}
-        />
-      </Box>
-      <Box sx={{ margin: 3 }}>
-        <TextField
-          label="Password"
-          variant="outlined"
-          type="password"
-          value={formData.password}
-          fullWidth
-          onChange={(e) => handleChange("password", e.target.value)}
-        />
-      </Box>
-      <Box sx={{ margin: 3 }}>
-        <Button type="submit" variant="contained" color="primary">
-          Login
-        </Button>
-      </Box>
-    </form>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        margin: "40px 20px",
+      }}>
+      <FormControl
+        sx={{
+          width: "80%",
+          [theme.breakpoints.up("sm")]: {
+            width: "50%",
+          },
+          [theme.breakpoints.up("md")]: {
+            width: "40%",
+          },
+          [theme.breakpoints.up("lg")]: {
+            width: "30%",
+          },
+        }}>
+        <form onSubmit={handleSubmit}>
+          <TextField
+            label="Username"
+            variant="outlined"
+            type="text"
+            fullWidth
+            sx={{ margin: "10px 0" }}
+            value={formData.username}
+            onChange={(e) => handleChange("username", e.target.value)}
+          />
+          <TextField
+            label="Password"
+            variant="outlined"
+            type="password"
+            fullWidth
+            sx={{ margin: "10px 0" }}
+            value={formData.password}
+            onChange={(e) => handleChange("password", e.target.value)}
+          />
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            sx={{ margin: "10px 0" }}>
+            Login
+          </Button>
+        </form>
+      </FormControl>
+    </Box>
   );
 };
 

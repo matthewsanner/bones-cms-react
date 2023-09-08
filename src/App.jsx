@@ -19,20 +19,22 @@ import CreateAccount from "./CreateAccount";
 import Login from "./Login";
 // import NotFound from "./NotFound";
 
-import CssBaseline from "@mui/material/CssBaseline";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
+import {
+  CssBaseline,
+  AppBar,
+  Box,
+  Toolbar,
+  Typography,
+  Button,
+  IconButton,
+  Menu,
+  MenuItem,
+} from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
 
 function App() {
   const [anchorEl, setAnchorEl] = useState(null);
-  const [authenticated, setAuthenticated] = useState(false);
+  const [authenticated, setAuthenticated] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -47,7 +49,7 @@ function App() {
           "An error occurred while authenticating user. Please try again later."
         );
       });
-  });
+  }, []);
 
   const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -62,11 +64,12 @@ function App() {
     try {
       const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/users/logout`;
       const response = await fetch(apiUrl, {
-        method: "POST", // or "GET", "PUT", etc., depending on your backend route
+        method: "POST",
         credentials: "include", // Include cookies in the request
       });
 
       if (response.ok) {
+        setAuthenticated(false);
         navigate("/");
         toast.success("Signed out successfully!");
       } else {
@@ -81,7 +84,7 @@ function App() {
 
   const EditPostGuard = ({ element }) => {
     const { postId } = useParams();
-    const [authorized, setAuthorized] = useState(false);
+    const [authorized, setAuthorized] = useState(null);
 
     useEffect(() => {
       const checkAuthorization = async () => {
@@ -109,8 +112,9 @@ function App() {
           if (authenticated && userId === postAuthorId) {
             setAuthorized(true);
           } else {
-            navigate("/", { replace: true }); // Redirect if not authorized
-            toast.error("Failed to authorize user. Please try again later.");
+            setAuthorized(false);
+            // navigate("/", { replace: true }); // Redirect if not authorized
+            // toast.error("Failed to authorize user. Please try again later.");
           }
         } catch (error) {
           console.error("Error checking authorization:", error);
@@ -124,6 +128,12 @@ function App() {
       checkAuthorization();
     }, [postId]);
 
+    if (authorized === false) {
+      navigate("/", { replace: true });
+      toast.error("Failed to authorize user. Please try again later.");
+      return null;
+    }
+
     return authorized ? element : null;
   };
 
@@ -131,46 +141,46 @@ function App() {
     <>
       <CssBaseline />
       <ToastContainer />
-      <div>
-        <header>
-          <Box sx={{ flexGrow: 1 }}>
-            <AppBar position="static">
-              <Toolbar>
-                <IconButton
-                  size="large"
-                  edge="start"
-                  color="inherit"
-                  aria-label="menu"
-                  sx={{ mr: 2 }}
-                  onClick={handleMenuClick}>
-                  <MenuIcon />
-                </IconButton>
-                <Menu
-                  anchorEl={anchorEl}
-                  open={Boolean(anchorEl)}
-                  onClose={handleMenuClose}>
-                  <MenuItem component={Link} to="/" onClick={handleMenuClose}>
-                    Home
-                  </MenuItem>
-                  {authenticated ? (
-                    <MenuItem
-                      component={Link}
-                      to="/posts/create-post"
-                      onClick={handleMenuClose}>
-                      Make New Post
-                    </MenuItem>
-                  ) : null}
+      <header>
+        <Box sx={{ flexGrow: 1 }}>
+          <AppBar position="static">
+            <Toolbar>
+              <IconButton
+                size="large"
+                edge="start"
+                color="inherit"
+                aria-label="menu"
+                sx={{ mr: 2 }}
+                onClick={handleMenuClick}>
+                <MenuIcon />
+              </IconButton>
+              <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleMenuClose}>
+                <MenuItem component={Link} to="/" onClick={handleMenuClose}>
+                  Home
+                </MenuItem>
+                {authenticated ? (
                   <MenuItem
                     component={Link}
-                    to="/users/create-account"
+                    to="/posts/create-post"
                     onClick={handleMenuClose}>
-                    Create Account
+                    Make New Post
                   </MenuItem>
-                </Menu>
-                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                  Bones CMS
-                </Typography>
-                {authenticated ? (
+                ) : null}
+                <MenuItem
+                  component={Link}
+                  to="/users/create-account"
+                  onClick={handleMenuClose}>
+                  Create Account
+                </MenuItem>
+              </Menu>
+              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                Bones CMS
+              </Typography>
+              {authenticated !== null &&
+                (authenticated ? (
                   <Button color="inherit" onClick={handleLogout}>
                     Logout
                   </Button>
@@ -178,41 +188,43 @@ function App() {
                   <Button color="inherit" component={Link} to="/users/login">
                     Login
                   </Button>
-                )}
-              </Toolbar>
-            </AppBar>
-          </Box>
-        </header>
-        <main>
-          <Routes>
-            {/* Define your routes */}
-            <Route exact path="/" element={<Home />} />
+                ))}
+            </Toolbar>
+          </AppBar>
+        </Box>
+      </header>
+      <main>
+        <Routes>
+          {/* Define your routes */}
+          <Route exact path="/" element={<Home />} />
+          <Route
+            path="/posts/:postId"
+            element={<BlogPost authenticated={authenticated} />}
+          />
+          {/* Protected route with guard */}
+          {authenticated ? (
+            <Route path="/posts/create-post" element={<CreatePost />} />
+          ) : (
             <Route
-              path="/posts/:postId"
-              element={<BlogPost authenticated={authenticated} />}
+              path="/posts/create-post"
+              element={<Navigate to="/users/login" replace />}
             />
-            {/* Protected route with guard */}
-            {authenticated ? (
-              <Route path="/posts/create-post" element={<CreatePost />} />
-            ) : (
-              <Route
-                path="/posts/create-post"
-                element={<Navigate to="/users/login" replace />}
-              />
-            )}
-            {/* Protected route for editing posts */}
-            <Route
-              path="/posts/:postId/edit"
-              element={<EditPostGuard element={<EditPost />} />}
-            />
-            <Route path="/users/create-account" element={<CreateAccount />} />
-            <Route path="/users/login" element={<Login />} />
-            {/* Route for handling 404 - Page Not Found */}
-            {/* <Route element={<NotFound/>} /> */}
-          </Routes>
-        </main>
-        <footer>{/* Your site's footer */}</footer>
-      </div>
+          )}
+          {/* Protected route for editing posts */}
+          <Route
+            path="/posts/:postId/edit"
+            element={<EditPostGuard element={<EditPost />} />}
+          />
+          <Route path="/users/create-account" element={<CreateAccount />} />
+          <Route
+            path="/users/login"
+            element={<Login setAuthenticated={setAuthenticated} />}
+          />
+          {/* Route for handling 404 - Page Not Found */}
+          {/* <Route element={<NotFound/>} /> */}
+        </Routes>
+      </main>
+      <footer>{/* Insert footer here */}</footer>
     </>
   );
 }

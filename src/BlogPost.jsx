@@ -2,13 +2,19 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import DOMPurify from "dompurify";
-import Card from "@mui/material/Card";
-import CardHeader from "@mui/material/CardHeader";
-import CardContent from "@mui/material/CardContent";
-import CardActions from "@mui/material/CardActions";
-import Typography from "@mui/material/Typography";
+import {
+  Box,
+  Card,
+  CardHeader,
+  CardContent,
+  CardActions,
+  Typography,
+  Button,
+} from "@mui/material";
+import useTheme from "@mui/material/styles/useTheme";
 
 const BlogPost = ({ authenticated }) => {
+  const theme = useTheme();
   const { postId } = useParams();
   const [post, setPost] = useState(null);
   const [authorizedToEdit, setAuthorizedToEdit] = useState(false);
@@ -82,26 +88,52 @@ const BlogPost = ({ authenticated }) => {
   }
 
   return (
-    <Card key={post._id} variant="outlined" sx={{ margin: 3 }}>
-      <CardHeader
-        title={post.title}
-        subheader={`Posted by ${post.username} on ${formatDateTime(post.date)}`}
-      />
-      <CardContent sx={{ py: 0 }}>
-        <Typography
-          variant="body1"
-          dangerouslySetInnerHTML={{
-            __html: DOMPurify.sanitize(post.content),
-          }}></Typography>
-      </CardContent>
-      <CardActions sx={{ padding: 2 }}>
-        {/* The link to the home page */}
-        <Link to={"/"}>Back to Home</Link>
-        {authorizedToEdit && (
-          <Link to={`/posts/${post._id}/edit`}>Edit Post</Link>
-        )}
-      </CardActions>
-    </Card>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        margin: "20px 40px",
+      }}>
+      <Card
+        key={post._id}
+        variant="outlined"
+        sx={{
+          margin: 3,
+          width: "100%", // Default width for screens smaller than large
+          [theme.breakpoints.up("lg")]: {
+            width: "80%", // 80% width for screens large and larger
+          },
+        }}>
+        <CardHeader
+          title={post.title}
+          subheader={`Posted by ${post.username} on ${formatDateTime(
+            post.date
+          )}`}
+        />
+        <CardContent sx={{ py: 0 }}>
+          <Typography
+            variant="body1"
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(post.content),
+            }}></Typography>
+        </CardContent>
+        <CardActions sx={{ padding: 2 }}>
+          {authorizedToEdit && (
+            <Button
+              component={Link}
+              to={`/posts/${post._id}/edit`}
+              variant="contained"
+              color="primary"
+              style={{ marginRight: "10px" }}>
+              Edit Post
+            </Button>
+          )}
+          <Link to={"/"}>Back to Home</Link>
+        </CardActions>
+      </Card>
+    </Box>
   );
 };
 

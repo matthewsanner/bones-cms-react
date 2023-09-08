@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { Box, TextField, Button } from "@mui/material";
+import { Box, FormControl, TextField, Button } from "@mui/material";
+import useTheme from "@mui/material/styles/useTheme";
 import "react-quill/dist/quill.snow.css";
 import ReactQuill from "react-quill";
 
 const CreatePost = () => {
+  const theme = useTheme();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     title: "",
@@ -55,29 +57,49 @@ const CreatePost = () => {
   ];
 
   return (
-    <form onSubmit={handleSubmit}>
-      <Box sx={{ margin: 3 }}>
-        <TextField
-          label="Title"
-          variant="outlined"
-          value={formData.title}
-          fullWidth
-          onChange={(e) => handleChange("title", e.target.value)}
-        />
-      </Box>
-      <Box sx={{ margin: 3 }}>
-        <ReactQuill
-          value={formData.content}
-          onChange={(value) => handleChange("content", value)}
-          modules={{ toolbar: toolbarOptions }} // Provide custom toolbar options
-        />
-      </Box>
-      <Box sx={{ margin: 3 }}>
-        <Button type="submit" variant="contained" color="primary">
-          Create Post
-        </Button>
-      </Box>
-    </form>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        margin: "20px 40px",
+      }}>
+      <FormControl
+        sx={{
+          width: "100%",
+          [theme.breakpoints.up("md")]: {
+            width: "90%",
+          },
+          [theme.breakpoints.up("lg")]: {
+            width: "75%",
+          },
+        }}>
+        <form onSubmit={handleSubmit}>
+          <TextField
+            label="Title"
+            variant="outlined"
+            value={formData.title}
+            fullWidth
+            sx={{ margin: "10px 0" }}
+            onChange={(e) => handleChange("title", e.target.value)}
+          />
+          <ReactQuill
+            value={formData.content}
+            sx={{ margin: "10px 0" }}
+            onChange={(value) => handleChange("content", value)}
+            modules={{ toolbar: toolbarOptions }} // Provide custom toolbar options
+          />
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            sx={{ margin: "10px 0" }}>
+            Create Post
+          </Button>
+        </form>
+      </FormControl>
+    </Box>
   );
 };
 

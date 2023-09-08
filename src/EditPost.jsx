@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import { Box, TextField, Button } from "@mui/material";
+import { Box, FormControl, TextField, Button } from "@mui/material";
+import useTheme from "@mui/material/styles/useTheme";
 import "react-quill/dist/quill.snow.css";
 import ReactQuill from "react-quill";
 
 function EditPost() {
+  const theme = useTheme();
   const navigate = useNavigate();
   const { postId } = useParams();
   const [formData, setFormData] = useState({
@@ -71,34 +73,50 @@ function EditPost() {
   }, [postId]);
 
   return (
-    <>
-      <form onSubmit={handleSubmit}>
-        <Box sx={{ margin: 3 }}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        margin: "20px 40px",
+      }}>
+      <FormControl
+        sx={{
+          width: "100%",
+          [theme.breakpoints.up("md")]: {
+            width: "90%",
+          },
+          [theme.breakpoints.up("lg")]: {
+            width: "75%",
+          },
+        }}>
+        <form onSubmit={handleSubmit}>
           <TextField
             label="Title"
             variant="outlined"
             value={formData.title}
             fullWidth
+            sx={{ margin: "10px 0" }}
             onChange={(e) => handleChange("title", e.target.value)}
           />
-        </Box>
-        <Box sx={{ margin: 3 }}>
           <ReactQuill
             value={formData.content}
+            sx={{ margin: "10px 0" }}
             onChange={(value) => handleChange("content", value)}
             modules={{ toolbar: toolbarOptions }} // Provide custom toolbar options
           />
-        </Box>
-        <Box sx={{ margin: 3 }}>
-          <Button type="submit" variant="contained" color="primary">
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            sx={{ margin: "15px 15px 15px 0" }}>
             Update Post
           </Button>
-        </Box>
-      </form>
-      <Box sx={{ margin: 3 }}>
-        <Link to={"/"}>Back to Home</Link>
-      </Box>
-    </>
+          <Link to={"/"}>Back to Home</Link>
+        </form>
+      </FormControl>
+    </Box>
   );
 }
 
