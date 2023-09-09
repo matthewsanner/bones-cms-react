@@ -165,7 +165,7 @@ const BlogPost = ({ authenticated }) => {
             <Button
               onClick={() => handleDeletePost(post._id)}
               variant="contained"
-              color="secondary"
+              color="warning"
               style={{ marginRight: "10px" }}>
               Delete Post
             </Button>
