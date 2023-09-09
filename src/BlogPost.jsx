@@ -90,8 +90,9 @@ const BlogPost = ({ authenticated }) => {
 
   // Define a function to handle post deletion
   const handleDeletePost = (postId) => {
+    const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/posts/${postId}`;
     // Send a DELETE request to delete the post
-    fetch(`/api/posts/${postId}`, {
+    fetch(apiUrl, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -165,7 +166,7 @@ const BlogPost = ({ authenticated }) => {
             <Button
               onClick={() => handleDeletePost(post._id)}
               variant="contained"
-              color="warning"
+              color="error"
               style={{ marginRight: "10px" }}>
               Delete Post
             </Button>
