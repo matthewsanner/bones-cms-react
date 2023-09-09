@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import DOMPurify from "dompurify";
 import {
@@ -14,6 +14,7 @@ import {
 import useTheme from "@mui/material/styles/useTheme";
 
 const BlogPost = ({ authenticated }) => {
+  const navigate = useNavigate();
   const theme = useTheme();
   const { postId } = useParams();
   const [post, setPost] = useState(null);
@@ -87,6 +88,36 @@ const BlogPost = ({ authenticated }) => {
     return null;
   }
 
+  // Define a function to handle post deletion
+  const handleDeletePost = (postId) => {
+    // Send a DELETE request to delete the post
+    fetch(`/api/posts/${postId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          // Handle the successful deletion
+          navigate(`/`);
+          console.log("Post deleted successfully!");
+          toast.success("Post deleted successfully!");
+        } else {
+          // Handle error response from the server
+          console.error("Failed to delete post");
+          toast.error("Failed to delete post. Please try again later.");
+        }
+      })
+      .catch((error) => {
+        // Handle any other errors that may occur during the request
+        console.error("Error deleting post:", error);
+        toast.error(
+          "An error occurred while deleting post. Please try again later."
+        );
+      });
+  };
+
   return (
     <Box
       sx={{
@@ -128,6 +159,15 @@ const BlogPost = ({ authenticated }) => {
               color="primary"
               style={{ marginRight: "10px" }}>
               Edit Post
+            </Button>
+          )}
+          {authorizedToEdit && (
+            <Button
+              onClick={() => handleDeletePost(post._id)}
+              variant="contained"
+              color="primary"
+              style={{ marginRight: "10px" }}>
+              Delete Post
             </Button>
           )}
           <Link to={"/"}>Back to Home</Link>

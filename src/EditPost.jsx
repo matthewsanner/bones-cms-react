@@ -35,6 +35,7 @@ function EditPost() {
       if (response.ok) {
         // Post update successful, redirect to home page
         navigate(`/posts/${postId}`);
+        console.log("Edited post successfully!");
         toast.success("Edited post successfully!");
       } else {
         // Handle error response from the server
