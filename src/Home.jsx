@@ -87,37 +87,49 @@ export default function Home() {
         margin: "20px 40px",
       }}>
       {/* Display the list of blog posts */}
+      {posts.map((post) => {
+        // Function to extract the first paragraph
+        const extractFirstParagraph = (content) => {
+          const paragraphs = content.split("</p>");
+          if (paragraphs.length > 1) {
+            return `${paragraphs[0]}</p>`; // Include the closing </p> tag
+          }
+          return content; // If there's only one paragraph, return the original content
+        };
 
-      {posts.map((post) => (
-        <Card
-          key={post._id}
-          variant="outlined"
-          sx={{
-            margin: 3,
-            width: "100%", // Default width for screens smaller than large
-            [theme.breakpoints.up("lg")]: {
-              width: "80%", // 80% width for screens large and larger
-            },
-          }}>
-          <CardHeader
-            title={post.title}
-            subheader={`Posted by ${post.username} on ${formatDateTime(
-              post.date
-            )}`}
-          />
-          <CardContent sx={{ py: 0 }}>
-            <Typography
-              variant="body1"
-              dangerouslySetInnerHTML={{
-                __html: DOMPurify.sanitize(post.content),
-              }}></Typography>
-          </CardContent>
-          <CardActions sx={{ padding: 2 }}>
-            {/* The link to the full post page */}
-            <Link to={`/posts/${post._id}`}>Read More</Link>
-          </CardActions>
-        </Card>
-      ))}
+        const truncatedContent = extractFirstParagraph(post.content);
+
+        return (
+          <Card
+            key={post._id}
+            variant="outlined"
+            sx={{
+              margin: 3,
+              width: "100%", // Default width for screens smaller than large
+              [theme.breakpoints.up("lg")]: {
+                width: "80%", // 80% width for screens large and larger
+              },
+            }}>
+            <CardHeader
+              title={post.title}
+              subheader={`Posted by ${post.username} on ${formatDateTime(
+                post.date
+              )}`}
+            />
+            <CardContent sx={{ py: 0 }}>
+              <Typography
+                variant="body1"
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(truncatedContent),
+                }}></Typography>
+            </CardContent>
+            <CardActions sx={{ padding: 2 }}>
+              {/* The link to the full post page */}
+              <Link to={`/posts/${post._id}`}>Read More</Link>
+            </CardActions>
+          </Card>
+        );
+      })}
       {/* Pagination controls */}
       <Pagination
         count={totalPages}
