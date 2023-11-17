@@ -1,4 +1,4 @@
-# Bones CMS Frontend
+# 🦴 Bones CMS Frontend 💻
 
 ## Overview
 
